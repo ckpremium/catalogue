@@ -475,6 +475,18 @@ h3 {
     }
 }
 
+/* View Count */
+.view-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.view-count img {
+    height: 24px;
+    border-radius: 4px;
+}
+
 .product-image-container {
     height: 220px;
     background: #E5E7EB;
