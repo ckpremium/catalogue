@@ -1,0 +1,17 @@
+{
+    "name": "CK Premium Catalog",
+    "short_name": "CK Premium",
+    "description": "แคตตาล็อกสินค้า CK Premium - จัดการข้อมูลและราคาสินค้า",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#E67E22",
+    "icons": [
+        {
+            "src": "icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
