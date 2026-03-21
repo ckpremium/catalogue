@@ -294,7 +294,7 @@ function syncGoogleSheet(isAuto = false) {
                 };
             });
 
-            productData = newData;
+            productData = newData.reverse();
             localStorage.setItem('productDatabase', JSON.stringify(productData));
             displayedProducts = [...productData];
             populateFilters();
