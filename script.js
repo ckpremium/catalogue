@@ -324,3 +324,21 @@ populateFilters();
 renderProducts();
 // Auto-sync on load
 syncGoogleSheet(true);
+
+// View Count API Integration
+async function updateViewCount() {
+    try {
+        // Using counterapi.dev - a free and reliable hit counter API
+        const response = await fetch('https://api.counterapi.dev/v1/ck-premium-catalog/visits/up');
+        const data = await response.json();
+        const element = document.getElementById('view-count-value');
+        if (element && data.count) {
+            element.innerText = data.count.toLocaleString() + " Views";
+        }
+    } catch (e) {
+        console.error('Counter API error:', e);
+        const element = document.getElementById('view-count-value');
+        if (element) element.innerText = "Welcome";
+    }
+}
+updateViewCount();
