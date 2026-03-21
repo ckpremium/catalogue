@@ -44,7 +44,7 @@ function renderProducts() {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-            <div class="product-image-container">
+            <div class="product-image-container" onclick="openModal('${finalImageUrl}', '${product.sku} - ${product.name}')">
                 <img src="${finalImageUrl}" class="product-image" alt="${product.name}" 
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 <div class="image-placeholder-icon" style="display: none;">
@@ -54,6 +54,14 @@ function renderProducts() {
                         <polyline points="21 15 16 10 5 21"></polyline>
                     </svg>
                     <span>ไม่มีรูปภาพ</span>
+                </div>
+                <div class="zoom-hint">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        <line x1="11" y1="8" x2="11" y2="14"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
                 </div>
             </div>
             <div class="product-info">
@@ -86,6 +94,15 @@ function renderProducts() {
                     </div>
                 </div>
 
+                <div class="product-actions">
+                    <a href="https://m.me/ckprintingth" target="_blank" class="inquiry-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.908 1.454 5.494 3.727 7.178V22l3.393-1.862c.846.235 1.743.36 2.68.36 5.523 0 10-4.145 10-9.258C21.8 6.145 17.523 2 12 2zm1.09 13l-2.433-2.603-4.75 2.603 5.225-5.552 2.493 2.603 4.69-2.603-5.225 5.552z"/>
+                        </svg>
+                        สอบถามรุ่นนี้
+                    </a>
+                </div>
+
                 <div class="product-card-note">
                     * ราคาพร้อมเลเซอร์โลโก้ฟรี (ยังไม่รวมค่าจัดส่ง)
                 </div>
@@ -93,6 +110,33 @@ function renderProducts() {
         `;
         container.appendChild(card);
     });
+}
+
+// Modal Logic
+const modal = document.getElementById("imageModal");
+const modalImg = document.getElementById("modalImg");
+const captionText = document.getElementById("caption");
+const closeModalBtn = document.getElementsByClassName("close-modal")[0];
+
+function openModal(imgSrc, caption) {
+    modal.style.display = "flex";
+    modalImg.src = imgSrc;
+    captionText.innerHTML = caption;
+    document.body.style.overflow = "hidden"; // Prevent scrolling
+}
+
+if (closeModalBtn) {
+    closeModalBtn.onclick = function () {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+}
+
+window.onclick = function (event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
 }
 
 // Search and Filter Logic
