@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yw-catalog-v18';
+const CACHE_NAME = 'yw-catalog-v20';
 const ASSETS = [
     './',
     './index.html',

@@ -282,6 +282,9 @@ function syncGoogleSheet(isAuto = false) {
                     return foundKey ? rowObj[foundKey] : null;
                 };
 
+                const visibility = (findCol(["สถานะ", "status", "ซ่อน", "hide"]) || "").toLowerCase();
+                const isHidden = visibility === "hide" || visibility === "ซ่อน" || visibility === "ไม่แสดง";
+
                 return {
                     sku: findCol(["รหัสสินค้า"]) || rowObj["sku"] || "-",
                     name: findCol(["ชื่อสินค้า"]) || rowObj["name"] || "-",
@@ -290,9 +293,10 @@ function syncGoogleSheet(isAuto = false) {
                     size: findCol(["ขนาด"]) || "-",
                     priceRetail: findCol(["ปลีก"]) || "-",
                     priceWholesale: findCol(["ส่ง"]) || "-",
-                    imageUrl: findCol(["URL"]) || rowObj["imageUrl"] || ""
+                    imageUrl: findCol(["URL"]) || rowObj["imageUrl"] || "",
+                    hidden: isHidden
                 };
-            });
+            }).filter(p => !p.hidden);
 
             productData = [...newData].reverse();
             localStorage.setItem('productDatabase', JSON.stringify(productData));
