@@ -95,7 +95,14 @@ function renderProducts() {
                 </div>
 
                 <div class="product-actions">
-                    <button onclick="handleInquiry('${product.sku}', '${product.name}')" class="inquiry-btn">
+                    <button onclick="copyProductDetails('${product.sku}', '${product.name}')" class="copy-btn">
+                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        คัดลอกรายละเอียด
+                    </button>
+                    <button onclick="window.open('https://m.me/ckprintingth', '_blank')" class="inquiry-btn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.908 1.454 5.494 3.727 7.178V22l3.393-1.862c.846.235 1.743.36 2.68.36 5.523 0 10-4.145 10-9.258C21.8 6.145 17.523 2 12 2zm1.09 13l-2.433-2.603-4.75 2.603 5.225-5.552 2.493 2.603 4.69-2.603-5.225 5.552z"/>
                         </svg>
@@ -139,67 +146,41 @@ window.onclick = function (event) {
     }
 }
 
-// Inquiry Handling with Clipboard Workaround and Countdown
-function handleInquiry(sku, name) {
+// Inquiry Logic v28 - Independent Buttons
+function copyProductDetails(sku, name) {
     const message = `สวัสดีครับ สนใจสินค้าชิ้นนี้ครับ\nรหัสสินค้า: ${sku}\nรุ่น: ${name}`;
 
-    // Support Function: Robost Copy to Clipboard
-    const copyToClipboard = (text) => {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            return navigator.clipboard.writeText(text);
-        } else {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                return Promise.resolve();
-            } catch (err) {
-                document.body.removeChild(textArea);
-                return Promise.reject(err);
-            }
-        }
-    };
+    // Support Function: Robost Copy
+    const textArea = document.createElement("textarea");
+    textArea.value = message;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showToast("คัดลอกรายละเอียดเรียบร้อย! ✅", "นำข้อมูลไปวางเพื่อสอบถามได้เลยครับ");
+    } catch (err) {
+        document.body.removeChild(textArea);
+        showToast("คัดลอกไม่สำเร็จ ❌", "โปรดลองใหม่อีกครั้ง");
+    }
+}
 
-    // Attempt copy and start countdown
-    copyToClipboard(message).then(() => {
-        let timeLeft = 3;
-        const toast = document.getElementById("toast");
-        if (!toast) return;
+function showToast(title, subtitle) {
+    const toast = document.getElementById("toast");
+    if (!toast) return;
 
-        // Visual Countdown UI
-        toast.innerHTML = `
-            <div style="font-weight: bold; margin-bottom: 8px; font-size: 1.1rem; color: #fff;">คัดลอกรหัสรุ่นแล้ว! ✅</div>
-            <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 15px;">กำลังพาคุณไปที่ Facebook Messenger ใน...</div>
-            <div id="countdown-num" style="font-size: 3rem; font-weight: 800; color: #E67E22; transition: all 0.3s ease;">${timeLeft}</div>
-        `;
-        toast.classList.add("show");
+    toast.innerHTML = `
+        <div style="font-weight: bold; margin-bottom: 8px; font-size: 1.1rem; color: #fff;">${title}</div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">${subtitle}</div>
+    `;
+    toast.classList.add("show");
 
-        const timer = setInterval(() => {
-            timeLeft--;
-            const numEl = document.getElementById("countdown-num");
-            if (numEl) {
-                numEl.innerText = timeLeft;
-                numEl.style.transform = "scale(1.2)";
-                setTimeout(() => numEl.style.transform = "scale(1)", 200);
-            }
-
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                toast.classList.remove("show");
-                window.open('https://m.me/ckprintingth', '_blank');
-            }
-        }, 1000);
-
-    }).catch(err => {
-        console.error('Copy failed:', err);
-        window.open('https://m.me/ckprintingth', '_blank');
-    });
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
 }
 
 // Search and Filter Logic
