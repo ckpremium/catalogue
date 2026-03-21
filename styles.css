@@ -610,41 +610,32 @@ h3 {
     transform: scale(1.05);
 }
 
-/* Toast Notification */
+/* Centered Toast Notification */
 .toast {
     visibility: hidden;
-    min-width: 280px;
-    margin-left: -140px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 12px;
-    padding: 16px;
     position: fixed;
     z-index: 3000;
     left: 50%;
-    bottom: 50px;
-    font-size: 0.9rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    line-height: 1.4;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background-color: rgba(0, 0, 0, 0.95);
+    color: #fff;
+    text-align: center;
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+    min-width: 300px;
+    max-width: 85%;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .toast.show {
     visibility: visible;
-    animation: fadein 0.5s, fadeout 0.5s 3s;
-}
-
-@keyframes fadein {
-    from {
-        bottom: 0;
-        opacity: 0;
-    }
-
-    to {
-        bottom: 50px;
-        opacity: 1;
-    }
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
 }
 
 @keyframes fadeout {

@@ -139,34 +139,67 @@ window.onclick = function (event) {
     }
 }
 
-// Inquiry Handling with Clipboard Workaround
+// Inquiry Handling with Clipboard Workaround and Countdown
 function handleInquiry(sku, name) {
     const message = `สวัสดีครับ สนใจสินค้าชิ้นนี้ครับ\nรหัสสินค้า: ${sku}\nรุ่น: ${name}`;
 
-    // Copy to clipboard
-    navigator.clipboard.writeText(message).then(() => {
-        showToast("คัดลอกข้อความและรหัสรุ่นแล้ว! นำไปวางในแชทเฟสบุ๊คได้เลยครับ");
+    // Support Function: Robost Copy to Clipboard
+    const copyToClipboard = (text) => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text);
+        } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                return Promise.resolve();
+            } catch (err) {
+                document.body.removeChild(textArea);
+                return Promise.reject(err);
+            }
+        }
+    };
 
-        // Open Messenger after a short delay
-        setTimeout(() => {
-            window.open('https://m.me/ckprintingth', '_blank');
-        }, 1200);
+    // Attempt copy and start countdown
+    copyToClipboard(message).then(() => {
+        let timeLeft = 3;
+        const toast = document.getElementById("toast");
+        if (!toast) return;
+
+        // Visual Countdown UI
+        toast.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 8px; font-size: 1.1rem; color: #fff;">คัดลอกรหัสรุ่นแล้ว! ✅</div>
+            <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 15px;">กำลังพาคุณไปที่ Facebook Messenger ใน...</div>
+            <div id="countdown-num" style="font-size: 3rem; font-weight: 800; color: #E67E22; transition: all 0.3s ease;">${timeLeft}</div>
+        `;
+        toast.classList.add("show");
+
+        const timer = setInterval(() => {
+            timeLeft--;
+            const numEl = document.getElementById("countdown-num");
+            if (numEl) {
+                numEl.innerText = timeLeft;
+                numEl.style.transform = "scale(1.2)";
+                setTimeout(() => numEl.style.transform = "scale(1)", 200);
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                toast.classList.remove("show");
+                window.open('https://m.me/ckprintingth', '_blank');
+            }
+        }, 1000);
+
     }).catch(err => {
-        console.error('Could not copy text: ', err);
+        console.error('Copy failed:', err);
         window.open('https://m.me/ckprintingth', '_blank');
     });
-}
-
-function showToast(message) {
-    const toast = document.getElementById("toast");
-    if (!toast) return;
-
-    toast.innerText = message;
-    toast.classList.add("show");
-
-    setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3500);
 }
 
 // Search and Filter Logic
