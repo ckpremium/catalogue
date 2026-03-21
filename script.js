@@ -278,7 +278,7 @@ function syncGoogleSheet(isAuto = false) {
 
                 // Helper to find column by keyword
                 const findCol = (keywords) => {
-                    const foundKey = Object.keys(rowObj).find(k => keywords.every(kw => k.includes(kw)));
+                    const foundKey = Object.keys(rowObj).find(k => keywords.some(kw => k.toLowerCase().includes(kw.toLowerCase())));
                     return foundKey ? rowObj[foundKey] : null;
                 };
 
