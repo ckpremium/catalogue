@@ -95,12 +95,12 @@ function renderProducts() {
                 </div>
 
                 <div class="product-actions">
-                    <a href="https://m.me/ckprintingth" target="_blank" class="inquiry-btn">
+                    <button onclick="handleInquiry('${product.sku}', '${product.name}')" class="inquiry-btn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.908 1.454 5.494 3.727 7.178V22l3.393-1.862c.846.235 1.743.36 2.68.36 5.523 0 10-4.145 10-9.258C21.8 6.145 17.523 2 12 2zm1.09 13l-2.433-2.603-4.75 2.603 5.225-5.552 2.493 2.603 4.69-2.603-5.225 5.552z"/>
                         </svg>
                         สอบถามรุ่นนี้
-                    </a>
+                    </button>
                 </div>
 
                 <div class="product-card-note">
@@ -137,6 +137,36 @@ window.onclick = function (event) {
         modal.style.display = "none";
         document.body.style.overflow = "auto";
     }
+}
+
+// Inquiry Handling with Clipboard Workaround
+function handleInquiry(sku, name) {
+    const message = `สวัสดีครับ สนใจสินค้าชิ้นนี้ครับ\nรหัสสินค้า: ${sku}\nรุ่น: ${name}`;
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(message).then(() => {
+        showToast("คัดลอกข้อความและรหัสรุ่นแล้ว! นำไปวางในแชทเฟสบุ๊คได้เลยครับ");
+
+        // Open Messenger after a short delay
+        setTimeout(() => {
+            window.open('https://m.me/ckprintingth', '_blank');
+        }, 1200);
+    }).catch(err => {
+        console.error('Could not copy text: ', err);
+        window.open('https://m.me/ckprintingth', '_blank');
+    });
+}
+
+function showToast(message) {
+    const toast = document.getElementById("toast");
+    if (!toast) return;
+
+    toast.innerText = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3500);
 }
 
 // Search and Filter Logic
