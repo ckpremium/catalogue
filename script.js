@@ -8,7 +8,10 @@ let loadedDB = JSON.parse(localStorage.getItem('productDatabase'));
 let productData = (loadedDB && loadedDB.length > 0) ? loadedDB : defaultProductData;
 
 // App State
-let displayedProducts = [...productData];
+let allProducts = []; // Will hold the full list from Google Sheet
+let displayedProducts = [];
+
+// v32: Recommended logic now driven by Google Sheet column "Recommended" or "สินค้าแนะนำ"
 let currentEditingSku = null;
 
 // DOM Elements
@@ -30,6 +33,39 @@ let selectedCapacities = [];
 let selectedRetailRanges = [];
 let selectedWholesaleRanges = [];
 
+
+// Render Recommended Products (Compact Row)
+function renderRecommended() {
+    const recContainer = document.getElementById('recommended-section');
+    if (!recContainer) return;
+
+    // Filter for products marked as recommended in Google Sheet
+    const recommended = allProducts.filter(p => p.isRecommended).slice(0, 3);
+
+    if (recommended.length === 0) {
+        recContainer.style.display = 'none';
+        return;
+    }
+
+    recContainer.style.display = 'block';
+    recContainer.innerHTML = `
+        <div class="section-title-sm">⭐ สินค้าแนะนำ</div>
+        <div class="recommended-row">
+            ${recommended.map(product => {
+        const imgUrl = `./extracted_images/${product.sku}.png`;
+        return `
+                    <div class="recommended-card" onclick="openModal('${imgUrl}', '${product.sku} - ${product.name}')">
+                        <img src="${imgUrl}" onerror="this.src='./icon-512.png'">
+                        <div class="rec-info">
+                            <div class="rec-name">${product.name}</div>
+                            <div class="rec-price">฿${product.priceRetail}</div>
+                        </div>
+                    </div>
+                `;
+    }).join('')}
+        </div>
+    `;
+}
 
 // Render Products
 function renderProducts() {
@@ -399,6 +435,9 @@ function syncGoogleSheet(isAuto = false) {
                 const visibility = (findCol(["สถานะ", "status", "ซ่อน", "hide"]) || "").toLowerCase();
                 const isHidden = visibility === "hide" || visibility === "ซ่อน" || visibility === "ไม่แสดง";
 
+                const recVal = (findCol(["แนะนำ", "recommended", "special", "star"]) || "").toLowerCase();
+                const isRecommended = recVal === "yes" || recVal === "ใช่" || recVal === "true" || recVal === "1" || recVal === "⭐" || recVal === "star";
+
                 return {
                     sku: findCol(["รหัสสินค้า"]) || rowObj["sku"] || "-",
                     name: findCol(["ชื่อสินค้า"]) || rowObj["name"] || "-",
@@ -408,15 +447,21 @@ function syncGoogleSheet(isAuto = false) {
                     priceRetail: findCol(["ปลีก"]) || "-",
                     priceWholesale: findCol(["ส่ง"]) || "-",
                     imageUrl: findCol(["URL"]) || rowObj["imageUrl"] || "",
-                    hidden: isHidden
+                    hidden: isHidden,
+                    isRecommended: isRecommended
                 };
             }).filter(p => !p.hidden);
 
-            productData = [...newData].reverse();
+            allProducts = [...newData].reverse(); // Store all products
+            productData = [...allProducts]; // productData is now the full list before filtering
             localStorage.setItem('productDatabase', JSON.stringify(productData));
-            displayedProducts = [...productData];
-            populateFilters();
+            displayedProducts = [...productData]; // displayedProducts starts as the full list
+
+            // v31: Render initial views
+            renderRecommended();
+            populateFilters(); // Renamed from setupFilters
             renderProducts();
+
         } catch (e) {
             console.error('Error parsing sheet data', e);
         } finally {
