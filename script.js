@@ -102,7 +102,7 @@ function renderProducts() {
                         </svg>
                         คัดลอกรายละเอียด
                     </button>
-                    <button onclick="window.open('https://m.me/ckprintingth', '_blank')" class="inquiry-btn">
+                    <button onclick="handleMessengerInquiry('${product.sku}', '${product.name}')" class="inquiry-btn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.477 2 2 6.145 2 11.258c0 2.908 1.454 5.494 3.727 7.178V22l3.393-1.862c.846.235 1.743.36 2.68.36 5.523 0 10-4.145 10-9.258C21.8 6.145 17.523 2 12 2zm1.09 13l-2.433-2.603-4.75 2.603 5.225-5.552 2.493 2.603 4.69-2.603-5.225 5.552z"/>
                         </svg>
@@ -126,10 +126,17 @@ const captionText = document.getElementById("caption");
 const closeModalBtn = document.getElementsByClassName("close-modal")[0];
 
 function openModal(imgSrc, caption) {
-    modal.style.display = "flex";
+    modal.style.display = "block";
     modalImg.src = imgSrc;
     captionText.innerHTML = caption;
     document.body.style.overflow = "hidden"; // Prevent scrolling
+
+    // GA Tracking: View Image
+    if (typeof gtag === 'function') {
+        gtag('event', 'view_product_image', {
+            'product_info': caption
+        });
+    }
 }
 
 if (closeModalBtn) {
@@ -146,9 +153,17 @@ window.onclick = function (event) {
     }
 }
 
-// Inquiry Logic v28 - Independent Buttons
+// Inquiry Logic v29 - Independent Buttons with GA Tracking
 function copyProductDetails(sku, name) {
     const message = `สวัสดีครับ สนใจสินค้าชิ้นนี้ครับ\nรหัสสินค้า: ${sku}\nรุ่น: ${name}`;
+
+    // GA Tracking: Copy Details
+    if (typeof gtag === 'function') {
+        gtag('event', 'copy_product_details', {
+            'product_sku': sku,
+            'product_name': name
+        });
+    }
 
     // Support Function: Robost Copy
     const textArea = document.createElement("textarea");
@@ -166,6 +181,17 @@ function copyProductDetails(sku, name) {
         document.body.removeChild(textArea);
         showToast("คัดลอกไม่สำเร็จ ❌", "โปรดลองใหม่อีกครั้ง");
     }
+}
+
+function handleMessengerInquiry(sku, name) {
+    // GA Tracking: Inquiry Click
+    if (typeof gtag === 'function') {
+        gtag('event', 'messenger_inquiry', {
+            'product_sku': sku,
+            'product_name': name
+        });
+    }
+    window.open('https://m.me/ckprintingth', '_blank');
 }
 
 function showToast(title, subtitle) {
