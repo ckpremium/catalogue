@@ -38,8 +38,16 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Service Worker Registered'))
-                    .catch(err => console.log('Service Worker Failed', err));
+                    .then(reg => console.log('SW Registered'))
+                    .catch(err => console.log('SW Failed', err));
+            });
+
+            // v30: Auto-Reload when new version is detected
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                window.location.reload();
+                refreshing = true;
             });
         }
     </script>
@@ -188,7 +196,7 @@
     <!-- Notification Toast -->
     <div id="toast" class="toast"></div>
 
-    <div style="text-align: center; padding: 20px; color: #999; font-size: 0.8rem;">Update v29</div>
+    <div style="text-align: center; padding: 20px; color: #999; font-size: 0.8rem;">Update v30</div>
     <script src="script.js"></script>
 </body>
 
