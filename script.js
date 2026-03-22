@@ -42,6 +42,8 @@ function renderRecommended() {
     // Filter for products marked as recommended in Google Sheet
     const recommended = allProducts.filter(p => p.isRecommended).slice(0, 3);
 
+    console.log('Detected Recommended Items:', recommended.length);
+
     if (recommended.length === 0) {
         recContainer.style.display = 'none';
         return;
@@ -418,6 +420,8 @@ function syncGoogleSheet(isAuto = false) {
             const cols = data.table.cols.map(c => c.label);
             const rows = data.table.rows;
 
+            console.log('Google Sheet Columns Found:', cols);
+
             if (rows.length === 0) return;
 
             const newData = rows.map(r => {
@@ -432,11 +436,10 @@ function syncGoogleSheet(isAuto = false) {
                     return foundKey ? rowObj[foundKey] : null;
                 };
 
-                const visibility = (findCol(["สถานะ", "status", "ซ่อน", "hide"]) || "").toLowerCase();
                 const isHidden = visibility === "hide" || visibility === "ซ่อน" || visibility === "ไม่แสดง";
 
-                const recVal = (findCol(["แนะนำ", "recommended", "special", "star"]) || "").toLowerCase();
-                const isRecommended = recVal === "yes" || recVal === "ใช่" || recVal === "true" || recVal === "1" || recVal === "⭐" || recVal === "star";
+                const recVal = (findCol(["แนะนำ", "recommended", "special", "star", "top", "fav", "pick"]) || "").toLowerCase();
+                const isRecommended = recVal === "yes" || recVal === "ใช่" || recVal === "true" || recVal === "1" || recVal === "⭐" || recVal === "star" || recVal === "แนะนำ";
 
                 return {
                     sku: findCol(["รหัสสินค้า"]) || rowObj["sku"] || "-",
