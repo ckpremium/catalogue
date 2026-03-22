@@ -400,18 +400,8 @@ clearFiltersBtn.addEventListener('click', () => {
 });
 // filterRetail/Wholesale standard listeners are no longer needed as they are now custom divs
 
-// View Toggles
-gridBtn.addEventListener('click', () => {
-    container.classList.remove('list-view');
-    gridBtn.classList.add('active');
-    listBtn.classList.remove('active');
-});
-
-listBtn.addEventListener('click', () => {
-    container.classList.add('list-view');
-    listBtn.classList.add('active');
-    gridBtn.classList.remove('active');
-});
+// Grid Btn no longer needs to toggle since it's the only one
+gridBtn.style.pointerEvents = 'none'; // Optional: make it just an icon
 
 
 // Google Sheet Integration (JSONP)
