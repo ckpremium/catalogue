@@ -436,6 +436,7 @@ function syncGoogleSheet(isAuto = false) {
                     return foundKey ? rowObj[foundKey] : null;
                 };
 
+                const visibility = (findCol(["สถานะ", "status", "ซ่อน", "hide"]) || "").toLowerCase();
                 const isHidden = visibility === "hide" || visibility === "ซ่อน" || visibility === "ไม่แสดง";
 
                 const recVal = (findCol(["แนะนำ", "recommended", "special", "star", "top", "fav", "pick"]) || "").toLowerCase();
